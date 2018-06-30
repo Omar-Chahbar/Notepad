@@ -12,7 +12,6 @@ object NoteContract{
             val COLUMN_TITLE = "title"
             val COLUMN_TEXT = "text"
             val COLUMN_FAVOURITE = "favourite"
-            val COLUMN_PREVIEW = "preview"
         }
     }
 }

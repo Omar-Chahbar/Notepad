@@ -23,12 +23,12 @@ class NewNote : AppCompatActivity() {
     }
 
     private fun saveNote() {
+        val noteid = databaseHandler.getNumberOfNotes() + 1
         val isFavourite = favourite.isChecked
-        val noteText = noteText.toString()
-        val preview = ""
-        val title = txtTitle.toString()
+        val noteText = noteText.text
+        val title = txtTitle.text
 
-        val note = Note(1,title,noteText,isFavourite,preview)
+        val note = Note(noteid,title.toString(),noteText.toString(),isFavourite)
 
         databaseHandler.insertNote(note)
         Toast.makeText( this,"Note Saved!", Toast.LENGTH_LONG).show()
@@ -36,4 +36,6 @@ class NewNote : AppCompatActivity() {
         val intent = Intent(this@NewNote,MainActivity::class.java)
         startActivity(intent)
     }
+
+
 }
