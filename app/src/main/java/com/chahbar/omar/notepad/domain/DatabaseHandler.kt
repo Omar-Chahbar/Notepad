@@ -3,7 +3,6 @@ package com.chahbar.omar.notepad.domain
 import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
-import android.database.DatabaseUtils
 import android.database.sqlite.SQLiteConstraintException
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteException
@@ -18,10 +17,9 @@ class DatabaseHandler(context: Context) : SQLiteOpenHelper(context, DBName, null
         val DBName = "NoteDB"
         val DBVersion = 1
         val SQL_CREATE_ENTRIES: String = "CREATE TABLE IF NOT EXISTS " + NoteContract.NoteEntry.TABLE_NAME + " " + "(" +
-                                            NoteContract.NoteEntry.COLUMN_NOTE_ID + " INTEGER PRIMARY KEY," +
                                             NoteContract.NoteEntry.COLUMN_TITLE + " TEXT, " +
                                             NoteContract.NoteEntry.COLUMN_TEXT + " TEXT, " +
-                                            NoteContract.NoteEntry.COLUMN_FAVOURITE + " TEXT;"
+                                            NoteContract.NoteEntry.COLUMN_FAVOURITE + " TEXT);"
     }
 
     override fun onCreate(db: SQLiteDatabase) {
@@ -40,7 +38,6 @@ class DatabaseHandler(context: Context) : SQLiteOpenHelper(context, DBName, null
 
         // Create a new map of values, where column names are the keys
         val values = ContentValues()
-        values.put(NoteContract.NoteEntry.COLUMN_NOTE_ID, note.noteid)
         values.put(NoteContract.NoteEntry.COLUMN_TITLE, note.title)
         values.put(NoteContract.NoteEntry.COLUMN_TEXT, note.text)
         values.put(NoteContract.NoteEntry.COLUMN_FAVOURITE, note.favourite)
@@ -54,7 +51,7 @@ class DatabaseHandler(context: Context) : SQLiteOpenHelper(context, DBName, null
     fun readAllNotes(): ArrayList<Note> {
         val notes = ArrayList<Note>()
         val db = writableDatabase
-        var cursor: Cursor?
+        val cursor: Cursor?
         try {
             cursor = db.rawQuery("select * from " + NoteContract.NoteEntry.TABLE_NAME, null)
         } catch (e: SQLiteException) {
@@ -62,18 +59,16 @@ class DatabaseHandler(context: Context) : SQLiteOpenHelper(context, DBName, null
             return ArrayList()
         }
 
-        var noteid: String
         var title: String
         var text: String
         var favourite: String
         if (cursor!!.moveToFirst()) {
             while (!cursor.isAfterLast) {
-                noteid = cursor.getString(cursor.getColumnIndex(NoteContract.NoteEntry.COLUMN_NOTE_ID))
                 title = cursor.getString(cursor.getColumnIndex(NoteContract.NoteEntry.COLUMN_TITLE))
                 text = cursor.getString(cursor.getColumnIndex(NoteContract.NoteEntry.COLUMN_TEXT))
                 favourite = cursor.getString(cursor.getColumnIndex(NoteContract.NoteEntry.COLUMN_FAVOURITE))
 
-                notes.add(Note(noteid.toInt(),title,text,favourite == "true"))
+                notes.add(Note(title,text,favourite == "1"))
                 cursor.moveToNext()
             }
         }
@@ -81,10 +76,33 @@ class DatabaseHandler(context: Context) : SQLiteOpenHelper(context, DBName, null
         return notes
     }
 
-    fun getNumberOfNotes() : Int {
+    @Throws(SQLiteConstraintException::class)
+    fun updateNote(oldTitle : String, newNote: Note): Boolean {
 
         val db = writableDatabase
-        return DatabaseUtils.queryNumEntries(db, NoteContract.NoteEntry.TABLE_NAME).toInt()
+        val values = ContentValues()
+
+        values.put(NoteContract.NoteEntry.COLUMN_TITLE, newNote.title)
+        values.put(NoteContract.NoteEntry.COLUMN_TEXT, newNote.text)
+        values.put(NoteContract.NoteEntry.COLUMN_FAVOURITE, newNote.favourite)
+
+        db.update(NoteContract.NoteEntry.TABLE_NAME,values, NoteContract.NoteEntry.COLUMN_TITLE + " LIKE ?", arrayOf(oldTitle))
+
+        return true
+    }
+
+    @Throws(SQLiteConstraintException::class)
+    fun deleteNote(noteTitle: String): Boolean {
+
+        val db = writableDatabase
+
+        val selection = NoteContract.NoteEntry.COLUMN_TITLE + " LIKE ?"
+
+        val selectionArgs = arrayOf(noteTitle)
+
+        db.delete(NoteContract.NoteEntry.TABLE_NAME, selection, selectionArgs)
+
+        return true
     }
 
 

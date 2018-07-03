@@ -8,7 +8,6 @@ object NoteContract{
 
         companion object {
             val TABLE_NAME = "Note"
-            val COLUMN_NOTE_ID = "noteid"
             val COLUMN_TITLE = "title"
             val COLUMN_TEXT = "text"
             val COLUMN_FAVOURITE = "favourite"

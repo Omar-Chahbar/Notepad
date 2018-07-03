@@ -3,10 +3,13 @@ package com.chahbar.omar.notepad
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import android.widget.TextView
+import android.support.v7.widget.DividerItemDecoration
+import android.support.v7.widget.LinearLayoutManager
 import com.chahbar.omar.notepad.domain.DatabaseHandler
+import com.chahbar.omar.notepad.domain.MainAdapter
 import com.chahbar.omar.notepad.domain.Note
-import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_main.addNote
+import kotlinx.android.synthetic.main.activity_main.recyclerView_notes
 
 
 class MainActivity : AppCompatActivity() {
@@ -31,25 +34,27 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun loadNotes() {
-        val notes = databaseHandler.readAllNotes()
+        val allNotes = databaseHandler.readAllNotes()
         val favouriteNotes : ArrayList<Note> = ArrayList()
+        val nonFavouriteNotes : ArrayList<Note> = ArrayList()
+        val orderedNotes : ArrayList<Note> = ArrayList()
 
-        notes.forEach {
+        allNotes.forEach {
             if(it.favourite){
                 favouriteNotes.add(it)
-                notes.remove(it)
+            }
+            else{
+                nonFavouriteNotes.add(it)
             }
         }
+        orderedNotes.addAll(favouriteNotes)
+        orderedNotes.addAll(nonFavouriteNotes)
 
-        notes.forEach{
-            var tv_user = TextView(this)
-            tv_user.textSize = 30F
-            tv_user.text = it.title.toString() + " - " + it.favourite.toString()
-            NoteList.addView(tv_user)
-        }
+        val linearLayoutManager = LinearLayoutManager(this)
+        val divider  = DividerItemDecoration(recyclerView_notes.context, linearLayoutManager.orientation)
 
-
+        recyclerView_notes.layoutManager = linearLayoutManager
+        recyclerView_notes.adapter = MainAdapter(orderedNotes)
+        recyclerView_notes.addItemDecoration(divider)
     }
-
-
 }
