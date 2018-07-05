@@ -14,9 +14,9 @@ class ViewNote : AppCompatActivity() {
 
     private lateinit var databaseHandler: DatabaseHandler
 
-    lateinit var note : Note
-    lateinit var noteTitles : ArrayList<String>
-    lateinit var oldTitle : String
+    private lateinit var note : Note
+    private lateinit var noteTitles : ArrayList<String>
+    private lateinit var oldTitle : String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

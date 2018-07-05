@@ -15,6 +15,7 @@ import kotlinx.android.synthetic.main.activity_main.recyclerView_notes
 class MainActivity : AppCompatActivity() {
 
     private lateinit var databaseHandler: DatabaseHandler
+    private var titles: ArrayList<String> = ArrayList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,6 +31,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun goToNewNote() {
         val intent = Intent(this@MainActivity,NewNote::class.java)
+        intent.putExtra("TITLES", titles)
         startActivity(intent)
     }
 
@@ -49,6 +51,10 @@ class MainActivity : AppCompatActivity() {
         }
         orderedNotes.addAll(favouriteNotes)
         orderedNotes.addAll(nonFavouriteNotes)
+
+        orderedNotes.forEach {
+            titles.add(it.title)
+        }
 
         val linearLayoutManager = LinearLayoutManager(this)
         val divider  = DividerItemDecoration(recyclerView_notes.context, linearLayoutManager.orientation)

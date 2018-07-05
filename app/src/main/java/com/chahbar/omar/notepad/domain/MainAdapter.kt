@@ -51,10 +51,28 @@ class MainAdapter(private val notes: ArrayList<Note>) : RecyclerView.Adapter<Cus
             notes[position].favourite = !notes[position].favourite
             databaseHandler.updateNote(notes[position].title,notes[position])
 
-
+            reorder(position)
 
             notifyDataSetChanged()
         }
+    }
+
+    private fun reorder(position: Int) {
+        if(notes[position].favourite) {
+            var index = 0
+            move(position,index)
+        }
+        else{
+            var index = notes.size - 1
+            move(position,index)
+        }
+    }
+
+    private fun move(position: Int, index: Int) {
+
+        var note = notes[position]
+        notes.removeAt(position)
+        notes.add(index,note)
     }
 }
 
