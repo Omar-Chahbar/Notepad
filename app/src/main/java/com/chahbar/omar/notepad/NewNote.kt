@@ -6,10 +6,7 @@ import android.support.v7.app.AppCompatActivity
 import android.widget.Toast
 import com.chahbar.omar.notepad.domain.DatabaseHandler
 import com.chahbar.omar.notepad.domain.Note
-import kotlinx.android.synthetic.main.activity_new_note.favourite
-import kotlinx.android.synthetic.main.activity_new_note.noteText
-import kotlinx.android.synthetic.main.activity_new_note.save
-import kotlinx.android.synthetic.main.activity_new_note.txtTitle
+import kotlinx.android.synthetic.main.activity_new_note.*
 
 class NewNote : AppCompatActivity() {
 
@@ -25,6 +22,15 @@ class NewNote : AppCompatActivity() {
 
         save.setOnClickListener{
             saveNote()
+        }
+
+        button_password.setOnClickListener{
+            var intent = Intent(this@NewNote, SetPassword::class.java)
+            intent.putExtra("TITLE", txtTitle.text.toString())
+            intent.putExtra("TEXT", noteText.text.toString())
+            intent.putExtra("FAVOURITE", favourite.isChecked)
+
+            startActivity(intent)
         }
     }
 
@@ -43,7 +49,7 @@ class NewNote : AppCompatActivity() {
         val noteText = noteText.text
         val title = txtTitle.text
 
-        val note = Note(title.toString(),noteText.toString(),isFavourite)
+        val note = Note(title.toString(),noteText.toString(),isFavourite, null)
 
         databaseHandler.insertNote(note)
         Toast.makeText( this,"Note Saved!", Toast.LENGTH_LONG).show()

@@ -38,14 +38,14 @@
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/button_delete"
-        android:layout_width="wrap_content"
+        android:layout_width="40dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginTop="8dp"
         android:clickable="true"
         app:backgroundTint="@android:color/holo_blue_bright"
         app:layout_constraintBottom_toBottomOf="@+id/textView_title"
-        app:layout_constraintEnd_toEndOf="@+id/textView_title"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/textView_title"
         app:srcCompat="@android:drawable/ic_menu_delete" />
 
