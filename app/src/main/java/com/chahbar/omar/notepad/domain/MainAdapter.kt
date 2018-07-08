@@ -13,7 +13,7 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
+import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.PopupWindow
 import android.widget.Toast
@@ -102,6 +102,9 @@ class CustomViewHolder(itemView: View, var parentView: ViewGroup) : RecyclerView
         if(note?.password != "%%%%%%%"){
             createPopup()
         }
+        else{
+            view()
+        }
     }
 
     private fun view() {
@@ -122,7 +125,8 @@ class CustomViewHolder(itemView: View, var parentView: ViewGroup) : RecyclerView
         val popupWindow = PopupWindow(
                 view,
                 LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                true
         )
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -147,7 +151,7 @@ class CustomViewHolder(itemView: View, var parentView: ViewGroup) : RecyclerView
                 0
         )
 
-        val password = view.findViewById<Button>(R.id.editText_password)
+        val password = view.findViewById<EditText>(R.id.editText_password)
         password.addTextChangedListener(object  : TextWatcher {
             override fun afterTextChanged(p0: Editable?) {
                 if(p0.toString() == note?.password){
