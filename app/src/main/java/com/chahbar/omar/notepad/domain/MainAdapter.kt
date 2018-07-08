@@ -1,10 +1,22 @@
 package com.chahbar.omar.notepad.domain
 
+import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.support.v7.widget.RecyclerView
+import android.text.Editable
+import android.text.TextWatcher
+import android.transition.Slide
+import android.transition.TransitionManager
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.LinearLayout
+import android.widget.PopupWindow
+import android.widget.Toast
 import com.chahbar.omar.notepad.R
 import com.chahbar.omar.notepad.ViewNote
 import kotlinx.android.synthetic.main.note_row.view.button_delete
@@ -22,7 +34,7 @@ class MainAdapter(private val notes: ArrayList<Note>) : RecyclerView.Adapter<Cus
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder{
         val layoutInflater = LayoutInflater.from(parent.context)
         val cellForRow = layoutInflater.inflate(R.layout.note_row,parent,false)
-        return CustomViewHolder(cellForRow)
+        return CustomViewHolder(cellForRow, parent)
     }
 
     override fun onBindViewHolder(holder: CustomViewHolder, position: Int) {
@@ -59,24 +71,24 @@ class MainAdapter(private val notes: ArrayList<Note>) : RecyclerView.Adapter<Cus
 
     private fun reorder(position: Int) {
         if(notes[position].favourite) {
-            var index = 0
+            val index = 0
             move(position,index)
         }
         else{
-            var index = notes.size - 1
+            val index = notes.size - 1
             move(position,index)
         }
     }
 
     private fun move(position: Int, index: Int) {
 
-        var note = notes[position]
+        val note = notes[position]
         notes.removeAt(position)
         notes.add(index,note)
     }
 }
 
-class CustomViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener{
+class CustomViewHolder(itemView: View, var parentView: ViewGroup) : RecyclerView.ViewHolder(itemView), View.OnClickListener{
 
     var note: Note ?= null
     var noteTitles : ArrayList<String> ?= null
@@ -86,10 +98,75 @@ class CustomViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View
     }
 
     override fun onClick(p0: View?) {
+
+        if(note?.password != "%%%%%%%"){
+            createPopup()
+        }
+    }
+
+    private fun view() {
         val context = itemView.context
         val showNoteIntent = Intent(context, ViewNote::class.java)
         showNoteIntent.putExtra("NOTE", note)
         showNoteIntent.putExtra("TITLES", noteTitles)
         context.startActivity(showNoteIntent)
     }
+
+    @SuppressLint("InflateParams")
+    private fun createPopup() {
+        val context = itemView.context
+        val inflater: LayoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+
+        val view = inflater.inflate(R.layout.check_password, null)
+
+        val popupWindow = PopupWindow(
+                view,
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+        )
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            popupWindow.elevation = 10.0f
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val slideIn = Slide()
+            slideIn.slideEdge = Gravity.TOP
+            popupWindow.enterTransition = slideIn
+
+            val slideOut = Slide()
+            slideOut.slideEdge = Gravity.BOTTOM
+            popupWindow.exitTransition = slideOut
+        }
+
+        TransitionManager.beginDelayedTransition(parentView)
+        popupWindow.showAtLocation(
+                parentView,
+                Gravity.CENTER,
+                0,
+                0
+        )
+
+        val password = view.findViewById<Button>(R.id.editText_password)
+        password.addTextChangedListener(object  : TextWatcher {
+            override fun afterTextChanged(p0: Editable?) {
+                if(p0.toString() == note?.password){
+                    view()
+                    popupWindow.dismiss()
+                }
+                else{
+                    Toast.makeText(itemView.context, "PIN Incorrect!", Toast.LENGTH_LONG).show()
+                    popupWindow.dismiss()
+                }
+            }
+
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            }
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+
+            }
+        })
+    }
+
 }

@@ -46,7 +46,7 @@ class ViewNote : AppCompatActivity() {
         val noteText = noteText.text
         val title = txtTitle.text
 
-        val note = Note(title.toString(),noteText.toString(),isFavourite)
+        val note = Note(title.toString(),noteText.toString(),isFavourite,note.password)
 
         databaseHandler.updateNote(oldTitle,note)
         Toast.makeText( this,"Note Saved!", Toast.LENGTH_LONG).show()

@@ -17,9 +17,10 @@ class DatabaseHandler(context: Context) : SQLiteOpenHelper(context, DBName, null
         val DBName = "NoteDB"
         val DBVersion = 1
         val SQL_CREATE_ENTRIES: String = "CREATE TABLE IF NOT EXISTS " + NoteContract.NoteEntry.TABLE_NAME + " " + "(" +
-                                            NoteContract.NoteEntry.COLUMN_TITLE + " TEXT, " +
-                                            NoteContract.NoteEntry.COLUMN_TEXT + " TEXT, " +
-                                            NoteContract.NoteEntry.COLUMN_FAVOURITE + " TEXT);"
+                NoteContract.NoteEntry.COLUMN_TITLE + " TEXT, " +
+                NoteContract.NoteEntry.COLUMN_TEXT + " TEXT, " +
+                NoteContract.NoteEntry.COLUMN_PASSWORD + " TEXT, " +
+                NoteContract.NoteEntry.COLUMN_FAVOURITE + " TEXT);"
     }
 
     override fun onCreate(db: SQLiteDatabase) {
@@ -41,6 +42,7 @@ class DatabaseHandler(context: Context) : SQLiteOpenHelper(context, DBName, null
         values.put(NoteContract.NoteEntry.COLUMN_TITLE, note.title)
         values.put(NoteContract.NoteEntry.COLUMN_TEXT, note.text)
         values.put(NoteContract.NoteEntry.COLUMN_FAVOURITE, note.favourite)
+        values.put(NoteContract.NoteEntry.COLUMN_PASSWORD, note.password)
 
         // Insert the new row, returning the primary key value of the new row
         db.insert(NoteContract.NoteEntry.TABLE_NAME, null, values)
@@ -62,13 +64,15 @@ class DatabaseHandler(context: Context) : SQLiteOpenHelper(context, DBName, null
         var title: String
         var text: String
         var favourite: String
+        var password: String
         if (cursor!!.moveToFirst()) {
             while (!cursor.isAfterLast) {
                 title = cursor.getString(cursor.getColumnIndex(NoteContract.NoteEntry.COLUMN_TITLE))
                 text = cursor.getString(cursor.getColumnIndex(NoteContract.NoteEntry.COLUMN_TEXT))
                 favourite = cursor.getString(cursor.getColumnIndex(NoteContract.NoteEntry.COLUMN_FAVOURITE))
+                password = cursor.getString(cursor.getColumnIndex(NoteContract.NoteEntry.COLUMN_PASSWORD))
 
-                notes.add(Note(title,text,favourite == "1"))
+                notes.add(Note(title, text, favourite == "1", password))
                 cursor.moveToNext()
             }
         }
@@ -77,7 +81,7 @@ class DatabaseHandler(context: Context) : SQLiteOpenHelper(context, DBName, null
     }
 
     @Throws(SQLiteConstraintException::class)
-    fun updateNote(oldTitle : String, newNote: Note): Boolean {
+    fun updateNote(oldTitle: String, newNote: Note): Boolean {
 
         val db = writableDatabase
         val values = ContentValues()
@@ -85,8 +89,9 @@ class DatabaseHandler(context: Context) : SQLiteOpenHelper(context, DBName, null
         values.put(NoteContract.NoteEntry.COLUMN_TITLE, newNote.title)
         values.put(NoteContract.NoteEntry.COLUMN_TEXT, newNote.text)
         values.put(NoteContract.NoteEntry.COLUMN_FAVOURITE, newNote.favourite)
+        values.put(NoteContract.NoteEntry.COLUMN_PASSWORD, newNote.password)
 
-        db.update(NoteContract.NoteEntry.TABLE_NAME,values, NoteContract.NoteEntry.COLUMN_TITLE + " LIKE ?", arrayOf(oldTitle))
+        db.update(NoteContract.NoteEntry.TABLE_NAME, values, NoteContract.NoteEntry.COLUMN_TITLE + " LIKE ?", arrayOf(oldTitle))
 
         return true
     }
@@ -104,19 +109,6 @@ class DatabaseHandler(context: Context) : SQLiteOpenHelper(context, DBName, null
 
         return true
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 }
