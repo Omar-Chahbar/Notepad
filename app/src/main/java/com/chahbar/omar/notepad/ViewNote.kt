@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity
 import android.widget.Toast
 import com.chahbar.omar.notepad.domain.DatabaseHandler
 import com.chahbar.omar.notepad.domain.Note
+import kotlinx.android.synthetic.main.activity_view_note.btnExit
 import kotlinx.android.synthetic.main.activity_view_note.noteText
 import kotlinx.android.synthetic.main.activity_view_note.save
 import kotlinx.android.synthetic.main.activity_view_note.txtTitle
@@ -33,6 +34,9 @@ class ViewNote : AppCompatActivity() {
         save.setOnClickListener{
             saveNote()
         }
+        btnExit.setOnClickListener {
+            goToMain()
+        }
     }
 
     private fun saveNote() {
@@ -51,7 +55,11 @@ class ViewNote : AppCompatActivity() {
         databaseHandler.updateNote(oldTitle,note)
         Toast.makeText( this,"Note Saved!", Toast.LENGTH_LONG).show()
 
-        val intent = Intent(this@ViewNote,MainActivity::class.java)
+        goToMain()
+    }
+
+    private fun goToMain() {
+        val intent = Intent(this@ViewNote, MainActivity::class.java)
         startActivity(intent)
     }
 }

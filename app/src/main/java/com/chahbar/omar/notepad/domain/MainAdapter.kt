@@ -16,7 +16,6 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.PopupWindow
-import android.widget.Toast
 import com.chahbar.omar.notepad.R
 import com.chahbar.omar.notepad.ViewNote
 import kotlinx.android.synthetic.main.note_row.view.button_delete
@@ -156,10 +155,6 @@ class CustomViewHolder(itemView: View, var parentView: ViewGroup) : RecyclerView
             override fun afterTextChanged(p0: Editable?) {
                 if(p0.toString() == note?.password){
                     view()
-                    popupWindow.dismiss()
-                }
-                else{
-                    Toast.makeText(itemView.context, "PIN Incorrect!", Toast.LENGTH_LONG).show()
                     popupWindow.dismiss()
                 }
             }
