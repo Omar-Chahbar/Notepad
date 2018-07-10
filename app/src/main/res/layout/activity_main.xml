@@ -18,7 +18,7 @@
         android:layout_marginTop="24dp"
         android:clickable="true"
         android:focusable="true"
-        app:backgroundTint="#b9770e "
+        app:backgroundTint="#818181"
         app:layout_constraintBottom_toTopOf="@+id/recyclerView_notes"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
