@@ -5,6 +5,7 @@
     android:id="@+id/main_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background=" #fad7a0 "
     tools:context=".MainActivity">
 
     <android.support.design.widget.FloatingActionButton
@@ -17,7 +18,7 @@
         android:layout_marginTop="24dp"
         android:clickable="true"
         android:focusable="true"
-        app:backgroundTint="@android:color/holo_blue_dark"
+        app:backgroundTint="#b9770e "
         app:layout_constraintBottom_toTopOf="@+id/recyclerView_notes"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

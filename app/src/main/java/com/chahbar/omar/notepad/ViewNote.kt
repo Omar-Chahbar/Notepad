@@ -15,9 +15,9 @@ class ViewNote : AppCompatActivity() {
 
     private lateinit var databaseHandler: DatabaseHandler
 
-    private lateinit var note : Note
-    private lateinit var noteTitles : ArrayList<String>
-    private lateinit var oldTitle : String
+    private lateinit var note: Note
+    private lateinit var noteTitles: ArrayList<String>
+    private lateinit var oldTitle: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,7 +31,7 @@ class ViewNote : AppCompatActivity() {
         txtTitle.setText(note.title)
         noteText.setText(note.text)
 
-        save.setOnClickListener{
+        save.setOnClickListener {
             saveNote()
         }
         btnExit.setOnClickListener {
@@ -41,8 +41,8 @@ class ViewNote : AppCompatActivity() {
 
     private fun saveNote() {
 
-        if(noteTitles.contains(txtTitle.text.toString())){
-            Toast.makeText( this,"There is already a note with this Title!", Toast.LENGTH_LONG).show()
+        if (noteTitles.contains(txtTitle.text.toString())) {
+            Toast.makeText(this, "There is already a note with this Title!", Toast.LENGTH_LONG).show()
             return
         }
 
@@ -50,10 +50,10 @@ class ViewNote : AppCompatActivity() {
         val noteText = noteText.text
         val title = txtTitle.text
 
-        val note = Note(title.toString(),noteText.toString(),isFavourite,note.password)
+        val note = Note(title.toString(), noteText.toString(), isFavourite, note.password)
 
-        databaseHandler.updateNote(oldTitle,note)
-        Toast.makeText( this,"Note Saved!", Toast.LENGTH_LONG).show()
+        databaseHandler.updateNote(oldTitle, note)
+        Toast.makeText(this, "Note Saved!", Toast.LENGTH_LONG).show()
 
         goToMain()
     }

@@ -30,22 +30,21 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun goToNewNote() {
-        val intent = Intent(this@MainActivity,NewNote::class.java)
+        val intent = Intent(this@MainActivity, NewNote::class.java)
         intent.putExtra("TITLES", titles)
         startActivity(intent)
     }
 
     private fun loadNotes() {
         val allNotes = databaseHandler.readAllNotes()
-        val favouriteNotes : ArrayList<Note> = ArrayList()
-        val nonFavouriteNotes : ArrayList<Note> = ArrayList()
-        val orderedNotes : ArrayList<Note> = ArrayList()
+        val favouriteNotes: ArrayList<Note> = ArrayList()
+        val nonFavouriteNotes: ArrayList<Note> = ArrayList()
+        val orderedNotes: ArrayList<Note> = ArrayList()
 
         allNotes.forEach {
-            if(it.favourite){
+            if (it.favourite) {
                 favouriteNotes.add(it)
-            }
-            else{
+            } else {
                 nonFavouriteNotes.add(it)
             }
         }
@@ -57,7 +56,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         val linearLayoutManager = LinearLayoutManager(this)
-        val divider  = DividerItemDecoration(recyclerView_notes.context, linearLayoutManager.orientation)
+        val divider = DividerItemDecoration(recyclerView_notes.context, linearLayoutManager.orientation)
 
         recyclerView_notes.layoutManager = linearLayoutManager
         recyclerView_notes.adapter = MainAdapter(orderedNotes)

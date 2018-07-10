@@ -14,8 +14,8 @@ class DatabaseHandler(context: Context) : SQLiteOpenHelper(context, DBName, null
 
     companion object {
 
-        val DBName = "NoteDB"
-        val DBVersion = 1
+        const val DBName = "NoteDB"
+        const val DBVersion = 1
         val SQL_CREATE_ENTRIES: String = "CREATE TABLE IF NOT EXISTS " + NoteContract.NoteEntry.TABLE_NAME + " " + "(" +
                 NoteContract.NoteEntry.COLUMN_TITLE + " TEXT, " +
                 NoteContract.NoteEntry.COLUMN_TEXT + " TEXT, " +

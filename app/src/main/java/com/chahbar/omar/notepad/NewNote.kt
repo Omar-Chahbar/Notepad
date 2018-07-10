@@ -17,7 +17,7 @@ import kotlinx.android.synthetic.main.activity_new_note.*
 class NewNote : AppCompatActivity() {
 
     private lateinit var databaseHandler: DatabaseHandler
-    private lateinit var noteTitles : ArrayList<String>
+    private lateinit var noteTitles: ArrayList<String>
     private var password: String = "%%%%%%%"
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,19 +27,16 @@ class NewNote : AppCompatActivity() {
 
         noteTitles = intent.getStringArrayListExtra("TITLES")
 
-        save.setOnClickListener{
+        save.setOnClickListener {
             saveNote()
         }
-
-        button_password.setOnClickListener{
+        button_password.setOnClickListener {
             createPopup()
         }
     }
-
     private fun createPopup() {
         val inflater: LayoutInflater = getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-
-        val view = inflater.inflate(R.layout.activity_set_password, null)
+        val view = inflater.inflate(R.layout.activity_set_password, findViewById(R.id.new_note_layout), false)
 
         val popupWindow = PopupWindow(
                 view,
@@ -78,29 +75,28 @@ class NewNote : AppCompatActivity() {
         pin.isFocusable = true
         pinConfirm.isFocusable = true
 
-        buttonCancel.setOnClickListener{
+        buttonCancel.setOnClickListener {
             popupWindow.dismiss()
         }
 
         buttonPopup.setOnClickListener {
-            if(pin.text.toString() == pinConfirm.text.toString()){
+            if (pin.text.toString() == pinConfirm.text.toString()) {
                 password = pin.text.toString()
                 popupWindow.dismiss()
                 Toast.makeText(this, "PIN set", Toast.LENGTH_LONG).show()
-            }
-            else{
-                Toast.makeText( this,"Your pins don't match!", Toast.LENGTH_LONG).show()
+            } else {
+                Toast.makeText(this, "Your pins don't match!", Toast.LENGTH_LONG).show()
             }
         }
     }
 
     private fun saveNote() {
-        if(noteTitles.contains(txtTitle.text.toString())){
-            Toast.makeText( this,"There is already a note with this Title!", Toast.LENGTH_LONG).show()
+        if (noteTitles.contains(txtTitle.text.toString())) {
+            Toast.makeText(this, "There is already a note with this Title!", Toast.LENGTH_LONG).show()
             return
         }
-        if((txtTitle.text.toString()).isEmpty()){
-            Toast.makeText( this,"You must enter a title!", Toast.LENGTH_LONG).show()
+        if ((txtTitle.text.toString()).isEmpty()) {
+            Toast.makeText(this, "You must enter a title!", Toast.LENGTH_LONG).show()
             return
         }
 
@@ -108,12 +104,12 @@ class NewNote : AppCompatActivity() {
         val noteText = noteText.text
         val title = txtTitle.text
 
-        val note = Note(title.toString(),noteText.toString(),isFavourite, password)
+        val note = Note(title.toString(), noteText.toString(), isFavourite, password)
 
         databaseHandler.insertNote(note)
-        Toast.makeText( this,"Note Saved!", Toast.LENGTH_LONG).show()
+        Toast.makeText(this, "Note Saved!", Toast.LENGTH_LONG).show()
 
-        val intent = Intent(this@NewNote,MainActivity::class.java)
+        val intent = Intent(this@NewNote, MainActivity::class.java)
         startActivity(intent)
     }
 

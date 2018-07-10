@@ -30,28 +30,34 @@ class MainAdapter(private val notes: ArrayList<Note>) : RecyclerView.Adapter<Cus
         return notes.size
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder{
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
-        val cellForRow = layoutInflater.inflate(R.layout.note_row,parent,false)
+        val cellForRow = layoutInflater.inflate(R.layout.note_row, parent, false)
         return CustomViewHolder(cellForRow, parent)
     }
 
     override fun onBindViewHolder(holder: CustomViewHolder, position: Int) {
-        holder.itemView.textView_title.text = notes[position].title
-        holder.itemView.checkBox_favourite.isChecked = notes[position].favourite
-        holder.note = notes[position]
+        val note = notes[position]
+        holder.itemView.textView_title.text = note.title
+        holder.itemView.checkBox_favourite.isChecked = note.favourite
+        holder.note = note
 
         val titles = ArrayList<String>()
         notes.forEach {
             titles.add(it.title)
         }
-        titles.remove(notes[position].title)
+        titles.remove(note.title)
         holder.noteTitles = titles
 
-        holder.itemView.button_delete.setOnClickListener{
-            databaseHandler = DatabaseHandler(holder.itemView.context)
-            databaseHandler.deleteNote(notes[position].title)
-            notes.removeAt(position)
+        holder.itemView.button_delete.setOnClickListener {
+            if (note.password != "%%%%%%%") {
+                holder.validateUserDelete(notes, position)
+            }
+            else{
+                databaseHandler = DatabaseHandler(holder.itemView.context)
+                databaseHandler.deleteNote(notes[position].title)
+                notes.removeAt(position)
+            }
 
             notifyDataSetChanged()
         }
@@ -59,8 +65,8 @@ class MainAdapter(private val notes: ArrayList<Note>) : RecyclerView.Adapter<Cus
         holder.itemView.checkBox_favourite.setOnClickListener {
             databaseHandler = DatabaseHandler(holder.itemView.context)
 
-            notes[position].favourite = !notes[position].favourite
-            databaseHandler.updateNote(notes[position].title,notes[position])
+            note.favourite = !note.favourite
+            databaseHandler.updateNote(note.title, note)
 
             reorder(position)
 
@@ -69,13 +75,12 @@ class MainAdapter(private val notes: ArrayList<Note>) : RecyclerView.Adapter<Cus
     }
 
     private fun reorder(position: Int) {
-        if(notes[position].favourite) {
+        if (notes[position].favourite) {
             val index = 0
-            move(position,index)
-        }
-        else{
+            move(position, index)
+        } else {
             val index = notes.size - 1
-            move(position,index)
+            move(position, index)
         }
     }
 
@@ -83,14 +88,14 @@ class MainAdapter(private val notes: ArrayList<Note>) : RecyclerView.Adapter<Cus
 
         val note = notes[position]
         notes.removeAt(position)
-        notes.add(index,note)
+        notes.add(index, note)
     }
 }
 
-class CustomViewHolder(itemView: View, var parentView: ViewGroup) : RecyclerView.ViewHolder(itemView), View.OnClickListener{
+class CustomViewHolder(itemView: View, private var parentView: ViewGroup) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
 
-    var note: Note ?= null
-    var noteTitles : ArrayList<String> ?= null
+    var note: Note? = null
+    var noteTitles: ArrayList<String>? = null
 
     init {
         itemView.setOnClickListener(this)
@@ -98,10 +103,9 @@ class CustomViewHolder(itemView: View, var parentView: ViewGroup) : RecyclerView
 
     override fun onClick(p0: View?) {
 
-        if(note?.password != "%%%%%%%"){
-            createPopup()
-        }
-        else{
+        if (note?.password != "%%%%%%%") {
+            validateUserOpen()
+        } else {
             view()
         }
     }
@@ -115,12 +119,58 @@ class CustomViewHolder(itemView: View, var parentView: ViewGroup) : RecyclerView
     }
 
     @SuppressLint("InflateParams")
-    private fun createPopup() {
-        val context = itemView.context
-        val inflater: LayoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-
+    private fun validateUserOpen() {
+        val inflater: LayoutInflater = itemView.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         val view = inflater.inflate(R.layout.check_password, null)
 
+        val popUp = createPopup(view)
+
+        val password = view.findViewById<EditText>(R.id.editText_password)
+        password.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(p0: Editable?) {
+                if (p0.toString() == note?.password) {
+                    view()
+                    popUp.dismiss()
+                }
+            }
+
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            }
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+
+            }
+        })
+    }
+
+    @SuppressLint("InflateParams")
+    fun validateUserDelete(notes: ArrayList<Note>, position: Int) {
+        val inflater: LayoutInflater = itemView.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        val view = inflater.inflate(R.layout.check_password, null)
+
+        val popUp = createPopup(view)
+
+        val password = view.findViewById<EditText>(R.id.editText_password)
+        password.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(p0: Editable?) {
+                if (p0.toString() == note?.password) {
+                    val databaseHandler = DatabaseHandler(itemView.context)
+                    databaseHandler.deleteNote(notes[position].title)
+                    notes.removeAt(position)
+                    popUp.dismiss()
+                }
+            }
+
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            }
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+
+            }
+        })
+    }
+
+    private fun createPopup(view: View): PopupWindow {
         val popupWindow = PopupWindow(
                 view,
                 LinearLayout.LayoutParams.WRAP_CONTENT,
@@ -149,23 +199,6 @@ class CustomViewHolder(itemView: View, var parentView: ViewGroup) : RecyclerView
                 0,
                 0
         )
-
-        val password = view.findViewById<EditText>(R.id.editText_password)
-        password.addTextChangedListener(object  : TextWatcher {
-            override fun afterTextChanged(p0: Editable?) {
-                if(p0.toString() == note?.password){
-                    view()
-                    popupWindow.dismiss()
-                }
-            }
-
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-            }
-
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-
-            }
-        })
+        return popupWindow
     }
-
 }
